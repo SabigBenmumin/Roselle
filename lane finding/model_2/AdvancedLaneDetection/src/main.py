@@ -57,6 +57,6 @@ def main(infile, outfile):
     processFrames(infile, outfile)
 
 if __name__ == "__main__":
-    infile = "..\\data\\dashcam_video_trim.mp4"
-    outfile = "..\\data\\dashcam_video_trim_output.mp4"
+    infile = "data\solidWhiteRight.mp4"
+    outfile = "data\solidWhiteRight_output.mp4"
     main(infile, outfile)
