@@ -67,7 +67,7 @@ def capture_frames(video_path, frames_dir):
     success = True
     while success:
         success, frame = cap.read()
-         cv2.imwrite(frames_dir + 'fram{:02}.jpg'.format(count), frame)
+        cv2.imwrite(frames_dir + 'fram{:02}.jpg'.format(count), frame)
         count += 1
     print('Completed!')
 
@@ -82,6 +82,54 @@ sort_nicely(video2)
 
 
 plot_demo = [1, 2, 3, 4, 5, 6, 7, 8]
+
+def calibrate_camera():
+    imgpaths = glob.glob('camera_cal/calibration*.jpg')
+    sort_nicely(img_paths)
+
+    image = cv2.imread(imgpaths[0])
+    imshape = image.shape[:2]
+
+    plt.imshow(image)
+    plt.show()
+    print('Image shape: {}'.format(image.shape))
+
+    print()
+    print('Calibrating the camera...')
+    print()
+
+    objpoints = []
+    imgpoints = []
+
+    nx = 9
+    ny = 6
+
+    objp = np.zeros([ny*nx, 3], dtype=np.float32)
+    objp[:,:2] = np.mgrid[0:nx, 0:ny].T.reshape(-1,2)
+
+    for idx, imgpath in enumerate(imgpaths):
+        img = cv2.imread(imgpath)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        ret, corners = cv2.drawShessboardCorners(img, (nx, ny), corners, ret)
+
+        imgpoints.append(corners)
+        objpoints.append(objp)
+
+        cv2.imshow('img',img)
+        cv2.waitKey(500)
+
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrate_camera(objpoints, imgpoints , imshape[::-1], None, None)
+    print('Calibration complete!')
+    cv2.destroyAllWindows()
+    return mtx, dist
+
+if os.path.exists('camera_calib.p'):
+    with open('camera_calib.p', mode = 'rb') as f:
+        data = pickle.load(f)
+        mtx, dist = data['mtx'],data['dist']
+        print('Loaded the saved camera calibration matrix & dist coefficients!')
+
 
 
 
